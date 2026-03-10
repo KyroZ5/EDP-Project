@@ -10,12 +10,11 @@ public class AccountsRetrieve {
     AccountsRetrieve(DefaultTableModel userModel){
      try
      {
-         Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306","root","");
+         Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/pos","root","");
          Statement stmt=(Statement)con.createStatement();
          PreparedStatement pst= con.prepareStatement("select*from accounts");
          ResultSet rs=pst.executeQuery();  
-         stmt.executeUpdate("use pos");
-         
+    
          while(rs.next()){
          String Name = rs.getString("Name");
          String Username = rs.getString("Username");
