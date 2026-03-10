@@ -27,6 +27,7 @@ public class SelectionAdmin extends javax.swing.JFrame {
         btnInventory.addActionListener(this::btnInventoryActionPerformed);
 
         jButton3.setText("Accounts");
+        jButton3.addActionListener(this::jButton3ActionPerformed);
 
         jButton4.setText("Cashier");
 
@@ -80,10 +81,12 @@ public class SelectionAdmin extends javax.swing.JFrame {
        this.dispose();
     }//GEN-LAST:event_btnLogoutActionPerformed
 
-    public static void main(String args[]) {
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+       Accounts a = new Accounts();
+       a.setVisible(true);
+       this.setVisible(false);
+    }//GEN-LAST:event_jButton3ActionPerformed
 
-        java.awt.EventQueue.invokeLater(() -> new SelectionAdmin().setVisible(true));
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnInventory;
