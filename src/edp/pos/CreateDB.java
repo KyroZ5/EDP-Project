@@ -16,7 +16,7 @@ public class CreateDB {
             
             stmt.executeUpdate("use pos");
             //stmt.executeUpdate("create table accounts(name varchar(50), username varchar(50), password varchar(50))");
-            System.out.println("table created..");
+            System.out.println("table accounts created..");
             conn.close();
         }catch(Exception e){
             System.out.println("Error: "+e.getMessage());

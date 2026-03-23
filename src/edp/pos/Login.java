@@ -153,7 +153,8 @@ public class Login extends javax.swing.JFrame {
             return;
         }
 
-        defaultAdminExists();
+        Admin();
+        User();
         Users matchedUser = null;
         for (Users acc : Users.accts) {
             if (userL.equals(acc.getUsername()) && passL.equals(acc.getPassword())) {
@@ -161,7 +162,6 @@ public class Login extends javax.swing.JFrame {
                 break;
             }
         }
-
         if (matchedUser != null) {
             JOptionPane.showMessageDialog(this, "Welcome, " + matchedUser.getEmployeeName(), "Login Successful", JOptionPane.INFORMATION_MESSAGE);
 
@@ -194,13 +194,21 @@ public class Login extends javax.swing.JFrame {
     private void txtPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPasswordActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtPasswordActionPerformed
-    private void defaultAdminExists() {
+    private void Admin() {
         for (Users acc : Users.accts) {
             if (acc.getUsername().equals("admin")) {
                 return;
             }
         }
         Users.accts.add(new Users("admin", "admin", "Administrator"));
+    }
+    private void User() {
+        for (Users acc : Users.accts) {
+            if (acc.getUsername().equals("user")) {
+                return;
+            }
+        }
+        Users.accts.add(new Users("user", "user", "Staff"));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
