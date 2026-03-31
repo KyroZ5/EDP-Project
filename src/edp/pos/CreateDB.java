@@ -12,11 +12,13 @@ public class CreateDB {
             ResultSet rs = null;
             
             //stmt.executeUpdate("create database pos");
-            System.out.println("database created..");
+            //System.out.println("database created..");
+            System.out.println("Using Database pos");
             
             stmt.executeUpdate("use pos");
             //stmt.executeUpdate("create table accounts(name varchar(50), username varchar(50), password varchar(50))");
-            System.out.println("table accounts created..");
+            //System.out.println("table accounts created..");
+            System.out.println("Using Table accounts");
             conn.close();
         }catch(Exception e){
             System.out.println("Error: "+e.getMessage());
