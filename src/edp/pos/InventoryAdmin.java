@@ -264,10 +264,6 @@ public class InventoryAdmin extends javax.swing.JFrame {
                 Users.setAdmin(true);
                 Users.setStaff("Administrator");
                 new SelectionAdmin().setVisible(true);
-            } else {
-                Users.setAdmin(false);
-                Users.setStaff(matchedUser.getEmployeeName());
-                new SelectionCashier().setVisible(true);
             }
             this.dispose();
         } else {
