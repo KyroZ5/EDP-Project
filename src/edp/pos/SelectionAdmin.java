@@ -12,7 +12,7 @@ public class SelectionAdmin extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         
-        setShape(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 20, 20));
+        setShape(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 25, 25));
         
         btnInventory();
         btnCashier();
@@ -30,7 +30,7 @@ public class SelectionAdmin extends javax.swing.JFrame {
     }
     
     public void btnInventory(){
-        ImageIcon icon = new ImageIcon("C:\\Users\\My PC\\OneDrive\\Documents\\NetBeansProjects\\EDP-POS\\src\\img\\inventory.png");
+        ImageIcon icon = new ImageIcon("C:\\Users\\My PC\\OneDrive\\Documents\\NetBeansProjects\\EDP-POS\\src\\img\\7.png");
         Image img = icon.getImage();
         Image imgScale = img.getScaledInstance(btnInventory.getWidth(), btnInventory.getHeight(), Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(imgScale);
@@ -38,7 +38,7 @@ public class SelectionAdmin extends javax.swing.JFrame {
     }
     
     public void btnCashier(){
-        ImageIcon icon = new ImageIcon("C:\\Users\\My PC\\OneDrive\\Documents\\NetBeansProjects\\EDP-POS\\src\\img\\cashier1.png");
+        ImageIcon icon = new ImageIcon("C:\\Users\\My PC\\OneDrive\\Documents\\NetBeansProjects\\EDP-POS\\src\\img\\8.png");
         Image img = icon.getImage();
         Image imgScale = img.getScaledInstance(btnCashier.getWidth(), btnCashier.getHeight(), Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(imgScale);
@@ -46,7 +46,7 @@ public class SelectionAdmin extends javax.swing.JFrame {
     }
     
     public void btnAccounts(){
-        ImageIcon icon = new ImageIcon("C:\\Users\\My PC\\OneDrive\\Documents\\NetBeansProjects\\EDP-POS\\src\\img\\admin.png");
+        ImageIcon icon = new ImageIcon("C:\\Users\\My PC\\OneDrive\\Documents\\NetBeansProjects\\EDP-POS\\src\\img\\9.png");
         Image img = icon.getImage();
         Image imgScale = img.getScaledInstance(btnAccounts.getWidth(), btnAccounts.getHeight(), Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(imgScale);
@@ -54,7 +54,7 @@ public class SelectionAdmin extends javax.swing.JFrame {
     }
     
     public void btnTransactions(){
-        ImageIcon icon = new ImageIcon("C:\\Users\\My PC\\OneDrive\\Documents\\NetBeansProjects\\EDP-POS\\src\\img\\Transaction.png");
+        ImageIcon icon = new ImageIcon("C:\\Users\\My PC\\OneDrive\\Documents\\NetBeansProjects\\EDP-POS\\src\\img\\10.png");
         Image img = icon.getImage();
         Image imgScale = img.getScaledInstance(btnTransactions.getWidth(), btnTransactions.getHeight(), Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(imgScale);
@@ -78,6 +78,7 @@ public class SelectionAdmin extends javax.swing.JFrame {
         setSize(new java.awt.Dimension(150, 150));
 
         jPanel1.setBackground(new java.awt.Color(100, 150, 135));
+        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jPanel1.setForeground(new java.awt.Color(100, 150, 135));
 
         btnTransactions.addActionListener(this::btnTransactionsActionPerformed);
@@ -114,7 +115,7 @@ public class SelectionAdmin extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(323, 323, 323)
                 .addComponent(logo, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(14, Short.MAX_VALUE))
+                .addContainerGap(12, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -124,13 +125,13 @@ public class SelectionAdmin extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnAccounts, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnTransactions, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnTransactions, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(btnCashier, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(btnInventory, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(34, 34, 34)
+                .addGap(27, 27, 27)
                 .addComponent(btnLogout)
-                .addGap(23, 23, 23))
+                .addGap(30, 30, 30))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

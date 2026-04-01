@@ -30,7 +30,7 @@ public class Transactions extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         
-        setShape(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 20, 20));
+        setShape(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 25, 25));
         
         scaleImage();
     }
@@ -67,6 +67,7 @@ public class Transactions extends javax.swing.JFrame {
         setUndecorated(true);
 
         jPanel1.setBackground(new java.awt.Color(100, 150, 135));
+        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jPanel1.setForeground(new java.awt.Color(100, 150, 135));
 
         logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/logo-light-transparent.png"))); // NOI18N

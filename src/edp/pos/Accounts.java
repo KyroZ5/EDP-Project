@@ -30,7 +30,7 @@ public class Accounts extends javax.swing.JFrame {
         AccountsRetrieve r = new AccountsRetrieve(userModel);
         setTitle("Accounts Registration System");
         
-        setShape(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 20, 20));
+        setShape(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 25, 25));
         
         scaleImage();
     }
@@ -72,6 +72,8 @@ public class Accounts extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
         setResizable(false);
+
+        jLayeredPane1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         jPanel1.setBackground(new java.awt.Color(100, 150, 135));
         jPanel1.setForeground(new java.awt.Color(100, 150, 135));
@@ -253,9 +255,20 @@ public class Accounts extends javax.swing.JFrame {
     }//GEN-LAST:event_deleteBtnActionPerformed
 
     private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
+        this.setEnabled(false); 
+        
         CreateAccount ca = new CreateAccount();
+        
+        // Add a listener so when Payment closes, Cashier re‑enables
+            ca.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosed(java.awt.event.WindowEvent e) {
+                    Accounts.this.setEnabled(true);
+                    Accounts.this.toFront(); // bring back focus
+                }
+            });
+        ca.setLocationRelativeTo(this);
         ca.setVisible(true);
-        //this.dispose();
     }//GEN-LAST:event_addBtnActionPerformed
 
     private void logoComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_logoComponentResized

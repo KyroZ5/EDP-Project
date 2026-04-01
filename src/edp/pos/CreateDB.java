@@ -19,6 +19,13 @@ public class CreateDB {
             //stmt.executeUpdate("create table accounts(name varchar(50), username varchar(50), password varchar(50))");
             //System.out.println("table accounts created..");
             System.out.println("Using Table accounts");
+            
+//            stmt.executeUpdate("drop table inventory");
+//            System.out.println("Dropped Inventory...");
+            
+//            stmt.executeUpdate("create table inventory(barcode int, itemName varchar(50), stock int, price double)");
+//            System.out.println("table inventory created..");
+            System.out.println("Using Table Inventory");
             conn.close();
         }catch(Exception e){
             System.out.println("Error: "+e.getMessage());

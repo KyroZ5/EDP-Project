@@ -1,31 +1,60 @@
 package edp.pos;
 
+import com.sun.jdi.connect.spi.Connection;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.geom.RoundRectangle2D;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 public class InventoryAdmin extends javax.swing.JFrame {
     
     String [][] row;
-    String [] col = {"Barcode", "Item Name", "Stock", "Price (₱)"};
+    String [] col = {"Barcode", "Item Name", "Stock Qty", "Price (₱)"};
     DefaultTableModel inventoryModel = new DefaultTableModel(row, col){
         @Override
         public boolean isCellEditable(int row, int col){
             return false;
         }  
     };
-    
+
+
     public InventoryAdmin() {
-        initComponents();
-        setLocationRelativeTo(null);
-        
-        setShape(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 20, 20));
-        
-        scaleImage();
+      initComponents();
+      setLocationRelativeTo(null);
+
+      setShape(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 25, 25));
+
+      scaleImage();
+
+      DefaultTableModel inventoryModel = (DefaultTableModel) inventoryJModel.getModel();
+      new InventoryDisplaySQL(inventoryModel);
+
+      // Get the header of the actual table in your form
+      JTableHeader header = inventoryJModel.getTableHeader();
+
+      // Change font (bold + bigger)
+      header.setFont(new Font("Segoe UI", Font.BOLD, 25));
+
+      // Optional: center header text
+      DefaultTableCellRenderer renderer = (DefaultTableCellRenderer) header.getDefaultRenderer();
+      renderer.setHorizontalAlignment(SwingConstants.CENTER);
+      
+      // Center all rows in the table
+      DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+      centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+      // Apply to each column
+      for (int i = 0; i < inventoryJModel.getColumnCount(); i++) {
+          inventoryJModel.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
     }
-    
+
     public void scaleImage(){
         ImageIcon icon = new ImageIcon("C:\\Users\\My PC\\OneDrive\\Documents\\NetBeansProjects\\EDP-POS\\src\\img\\logo-light-transparent.png");
         Image img = icon.getImage();
@@ -132,10 +161,12 @@ public class InventoryAdmin extends javax.swing.JFrame {
         setResizable(false);
 
         jPanel2.setBackground(new java.awt.Color(100, 150, 135));
+        jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jPanel2.setForeground(new java.awt.Color(100, 150, 135));
 
-        inventoryJModel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        inventoryJModel.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
         inventoryJModel.setModel(inventoryModel);
+        inventoryJModel.setRowHeight(50);
         jScrollPane1.setViewportView(inventoryJModel);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
@@ -172,6 +203,7 @@ public class InventoryAdmin extends javax.swing.JFrame {
 
         addBtn.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         addBtn.setText("Add Item");
+        addBtn.addActionListener(this::addBtnActionPerformed);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -313,8 +345,27 @@ public class InventoryAdmin extends javax.swing.JFrame {
     }//GEN-LAST:event_deleteBtnActionPerformed
 
     private void refreshBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshBtnActionPerformed
-        // TODO add your handling code here:
+        DefaultTableModel inventoryModel = (DefaultTableModel) inventoryJModel.getModel();
+        new InventoryDisplaySQL(inventoryModel);
     }//GEN-LAST:event_refreshBtnActionPerformed
+
+    private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
+        this.setEnabled(false); 
+        
+        AddItem a = new AddItem();
+        
+        // Add a listener so when Payment closes, Cashier re‑enables
+        a.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                InventoryAdmin.this.setEnabled(true);
+                InventoryAdmin.this.toFront(); // bring back focus
+            }
+        });
+
+        a.setLocationRelativeTo(this);
+        a.setVisible(true);
+    }//GEN-LAST:event_addBtnActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
