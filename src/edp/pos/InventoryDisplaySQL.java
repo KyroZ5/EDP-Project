@@ -18,7 +18,7 @@ public class InventoryDisplaySQL {
             inventoryModel.setRowCount(0);
 
             while(rs.next()){
-                int barcode = rs.getInt("barcode");
+                String barcode = rs.getString("barcode");
                 String itemName = rs.getString("itemName");
                 int stock = rs.getInt("stock");
                 Double price = rs.getDouble("price");

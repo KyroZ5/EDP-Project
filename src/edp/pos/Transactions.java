@@ -53,6 +53,14 @@ public class Transactions extends javax.swing.JFrame {
         for (int i = 0; i < transactionJTable.getColumnCount(); i++) {
             transactionJTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
           }
+        
+        jDateChooser1.addPropertyChangeListener("date", evt -> {
+            if (jDateChooser1.getDate() != null) {
+                filterByDate();   // ✅ refresh table with selected date
+            } else {
+                TransactionSQL.loadTransactions(transactionModel); // load all if cleared
+            }
+        });
     }
  
     public void scaleImage(){

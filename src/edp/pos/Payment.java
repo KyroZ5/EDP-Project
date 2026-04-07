@@ -8,7 +8,6 @@ import javax.swing.JOptionPane;
 
 public class Payment extends javax.swing.JFrame {
 
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Payment.class.getName());
     private double totalAmount;
     private double cashReceived;
 
@@ -100,10 +99,12 @@ public class Payment extends javax.swing.JFrame {
         jLabel1.setText("Cash Received:");
 
         lblTotal.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
-        lblTotal.setText("Total:");
+        lblTotal.setText(" Total:");
+        lblTotal.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         lblChange.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
-        lblChange.setText("Change: ₱0.0");
+        lblChange.setText(" Change: ₱0.0");
+        lblChange.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         cashField.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
 
@@ -116,7 +117,7 @@ public class Payment extends javax.swing.JFrame {
         numpadPanel.setLayout(numpadPanelLayout);
         numpadPanelLayout.setHorizontalGroup(
             numpadPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 365, Short.MAX_VALUE)
+            .addGap(0, 475, Short.MAX_VALUE)
         );
         numpadPanelLayout.setVerticalGroup(
             numpadPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -135,13 +136,13 @@ public class Payment extends javax.swing.JFrame {
                 .addGap(22, 22, 22))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGap(86, 86, 86)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblTotal)
-                    .addComponent(lblChange)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel1)
-                    .addComponent(cashField, javax.swing.GroupLayout.PREFERRED_SIZE, 337, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(147, 147, 147)
-                .addComponent(numpadPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(cashField, javax.swing.GroupLayout.DEFAULT_SIZE, 337, Short.MAX_VALUE)
+                    .addComponent(lblTotal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lblChange, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
+                .addComponent(numpadPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -182,7 +183,7 @@ public class Payment extends javax.swing.JFrame {
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         int x = JOptionPane.showConfirmDialog(this, "Are you sure you want to Cancel?", "Exit Payment", JOptionPane.YES_NO_OPTION);
         if (x == JOptionPane.YES_OPTION) {
-            confirmed = false;
+            confirmed = false; 
             this.dispose();
         }
     }//GEN-LAST:event_btnCancelActionPerformed
@@ -200,11 +201,11 @@ public class Payment extends javax.swing.JFrame {
         lblChange.setText("Change: ₱" + change);
         JOptionPane.showMessageDialog(this, "Change to give: ₱" + change, "Payment Successful", JOptionPane.INFORMATION_MESSAGE);
 
-        confirmed = true;   // ✅ mark as confirmed
+        confirmed = true;  
         this.dispose();
     } catch (NumberFormatException e) {
         JOptionPane.showMessageDialog(this, "Invalid cash input!", "Error", JOptionPane.ERROR_MESSAGE);
-    }                                         
+    }                                                              
     }//GEN-LAST:event_btnConfirmActionPerformed
     
     public double getCashReceived() {

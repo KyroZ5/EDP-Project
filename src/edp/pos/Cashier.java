@@ -179,10 +179,13 @@ public class Cashier extends javax.swing.JFrame {
         btnMenu.setText("Menu");
         btnMenu.addActionListener(this::btnMenuActionPerformed);
 
+        jTextArea.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jTextArea.setEnabled(false);
         jScrollPane1.setViewportView(jTextArea);
 
         btnPrint.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         btnPrint.setText("Print Receipt");
+        btnPrint.addActionListener(this::btnPrintActionPerformed);
 
         btnReset.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         btnReset.setText("Reset All");
@@ -457,25 +460,33 @@ public class Cashier extends javax.swing.JFrame {
             Cashier.this.setEnabled(true);
             Cashier.this.toFront();
 
-            if (p.isConfirmed()) {  
-                double cash = p.getCashReceived();
-                double balance = cash - totalAmount;
-                if (cash >= totalAmount) {
-                    java.util.Date now = new java.util.Date();
-                    String staff = Users.getCurrentName();
-                    boolean success = TransactionSQL.addTransaction(now, totalAmount, balance, staff);
+            if (p.isConfirmed()) {
+            double cash = p.getCashReceived();
+            double balance = cash - totalAmount;
 
-                    if (success) {
-                        TransacData.transData.add(new TransacData(TransacData.transData.size() + 1, totalAmount, balance));
+            if (cash >= totalAmount) {
+                java.util.Date now = new java.util.Date();
+                String staff = Users.getCurrentName();
 
-                        generateReceipt(totalAmount, cash, balance);
-                        printReceiptDirect();
-                        btnPrint.setEnabled(true);
-                    }
-                }
+                int transactionNo = TransactionSQL.addTransaction(now, totalAmount, balance, staff);
+
+            if (transactionNo != -1) {
+            for (int i = 0; i < cashierTable.getRowCount(); i++) {
+                String barcode = cashierTable.getValueAt(i, 0).toString();
+                int qty = Integer.parseInt(cashierTable.getValueAt(i, 2).toString());
+                InventoryUpdateSQL.reduceStock(barcode, qty);
+            }
+
+
+                generateReceipt(transactionNo, totalAmount, cash, balance);
+                btnPrint.setEnabled(true);
+            }       
             }
         }
+    }
+
     });
+
 
         p.setLocationRelativeTo(this);
         p.setVisible(true);
@@ -490,7 +501,7 @@ public class Cashier extends javax.swing.JFrame {
        barcodeField.requestFocusInWindow();
     }//GEN-LAST:event_addItemBarcodeActionPerformed
 
-    private void generateReceipt(double total, double cash, double balance) {
+    private void generateReceipt(int transactionNo, double total, double cash, double balance) {
         jTextArea.setText(""); // clear
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm a");
@@ -498,7 +509,7 @@ public class Cashier extends javax.swing.JFrame {
             "PENTAGRAM RECEIPT\n" +
             "---------------------------------------------\n" +
             "Date: " + dateFormat.format(new Date()) + "\n" +
-            "Transaction # " + TransacData.transData.size() + "\n" +
+            "Transaction # " + transactionNo + "\n" +
             "Staff: " + Users.getCurrentName() + "\n\n"
         );
 
@@ -508,14 +519,14 @@ public class Cashier extends javax.swing.JFrame {
             String price = cashierTable.getValueAt(i, 3).toString();
             String subtotal = cashierTable.getValueAt(i, 4).toString();
             jTextArea.setText(jTextArea.getText() +
-                qty + "x " + itemName + " ₱" + price + " = " + subtotal + "\n");
+                qty + "x " + itemName + " P" + price + " = " + subtotal + "\n");
         }
 
         jTextArea.setText(jTextArea.getText() +
             "---------------------------------------------\n" +
-            "Total: ₱" + String.format("%.2f", total) + "\n" +
-            "Cash: ₱" + String.format("%.2f", cash) + "\n" +
-            "Change: ₱" + String.format("%.2f", balance) + "\n\n" +
+            "Total: P" + String.format("%.2f", total) + "\n" +
+            "Cash: P" + String.format("%.2f", cash) + "\n" +
+            "Change: P" + String.format("%.2f", balance) + "\n\n" +
             "THANK YOU FOR SHOPPING!\n"
         );
     }
@@ -588,6 +599,14 @@ public class Cashier extends javax.swing.JFrame {
     private void quantityFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_quantityFieldActionPerformed
       
     }//GEN-LAST:event_quantityFieldActionPerformed
+
+    private void btnPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrintActionPerformed
+        if (jTextArea.getText().trim().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "No receipt to print!", "Error", JOptionPane.WARNING_MESSAGE);
+        return;
+        }
+        printReceiptDirect();
+    }//GEN-LAST:event_btnPrintActionPerformed
    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     javax.swing.JButton addItemBarcode;

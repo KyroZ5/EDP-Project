@@ -6,10 +6,10 @@ import javax.swing.table.DefaultTableModel;
 
 public class TransactionSQL {
 
-    public static boolean addTransaction(java.util.Date dateTime, double amount, double change, String staff) {
+    public static int addTransaction(java.util.Date dateTime, double amount, double change, String staff) {
         try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/pos","root","");
-            PreparedStatement  pst = con.prepareStatement("insert into transactions (date_time, amount, change_amount, staff) values (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
-            
+             PreparedStatement pst = con.prepareStatement("INSERT INTO transactions (date_time, amount, change_amount, staff) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+
             pst.setTimestamp(1, new java.sql.Timestamp(dateTime.getTime()));
             pst.setDouble(2, amount);
             pst.setDouble(3, change);
@@ -17,19 +17,20 @@ public class TransactionSQL {
 
             int rowsAffected = pst.executeUpdate();
 
-            ResultSet keys = pst.getGeneratedKeys();
-            if (keys.next()) {
-                int transactionNo = keys.getInt(1);
-                System.out.println("New Transaction #: " + transactionNo);
+            if (rowsAffected > 0) {
+                ResultSet keys = pst.getGeneratedKeys();
+                if (keys.next()) {
+                    return keys.getInt(1);
+                }
             }
-
-            return rowsAffected > 0;
+            return -1;
 
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
+            return -1;
         }
     }
+
 
     public static void loadTransactions(DefaultTableModel model) {
         model.setRowCount(0);
@@ -90,5 +91,19 @@ public class TransactionSQL {
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+    
+    public static int getNextTransactionNo() {
+        int nextNo = 1;
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/pos", "root", "")) {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT IFNULL(MAX(transaction_no), 0) + 1 AS nextNo FROM transactions");
+            if (rs.next()) {
+                nextNo = rs.getInt("nextNo");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return nextNo;
     }
 }

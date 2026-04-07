@@ -13,9 +13,10 @@ public class UpdateItem extends javax.swing.JFrame {
 
         this.barcode = barcode; // store it
         barcodeField.setText(barcode);
+        barcodeField.setEnabled(false);
         itemNameField.setText(itemName);
         stockField.setText(String.valueOf(stock));
-        priceField.setText(String.valueOf(price));;
+        priceField.setText(String.valueOf(price));
     }
 
  

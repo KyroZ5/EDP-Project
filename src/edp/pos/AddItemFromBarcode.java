@@ -1,10 +1,6 @@
-
 package edp.pos;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -24,16 +20,44 @@ public class AddItemFromBarcode {
             if (rs.next()) {
                 String itemName = rs.getString("itemName");
                 double price = rs.getDouble("price");
+                int stock = rs.getInt("stock"); 
+
+                if (stock == 0) {
+                    JOptionPane.showMessageDialog(null,
+                        "Item \"" + itemName + "\" is OUT OF STOCK!",
+                        "Stock Warning", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                if (qty > stock) {
+                    JOptionPane.showMessageDialog(null,
+                        "Not enough stock for \"" + itemName + "\". Available: " + stock,
+                        "Stock Warning", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                if (stock <= 10) {
+                    JOptionPane.showMessageDialog(null,
+                        "Item \"" + itemName + "\" stock is low (" + stock + " left).",
+                        "Stock Warning", JOptionPane.WARNING_MESSAGE);
+                }
 
                 boolean found = false;
                 for (int i = 0; i < cashierModel.getRowCount(); i++) {
                     String existingBarcode = cashierModel.getValueAt(i, 0).toString();
                     if (existingBarcode.equals(barcode)) {
-                        // Update existing row
                         int existingQty = Integer.parseInt(cashierModel.getValueAt(i, 2).toString());
                         int newQty = existingQty + qty;
-                        cashierModel.setValueAt(newQty, i, 2); // update quantity
-                        cashierModel.setValueAt(price * newQty, i, 4); // update subtotal
+
+                        if (newQty > stock) {
+                            JOptionPane.showMessageDialog(null,
+                                "Cannot add more \"" + itemName + "\". Only " + stock + " left.",
+                                "Stock Warning", JOptionPane.WARNING_MESSAGE);
+                            return;
+                        }
+
+                        cashierModel.setValueAt(newQty, i, 2);
+                        cashierModel.setValueAt(price * newQty, i, 4); 
                         found = true;
                         break;
                     }

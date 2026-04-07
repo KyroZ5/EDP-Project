@@ -316,9 +316,10 @@ public class Accounts extends javax.swing.JFrame {
         String name = userModel.getValueAt(row, 1).toString();
         String username = userModel.getValueAt(row, 2).toString();
         String password = userModel.getValueAt(row, 3).toString();
+        String maskedPassword = "*".repeat(password.length());
         String role = userModel.getValueAt(row, 4).toString();
         
-        UpdateAccount ua = new UpdateAccount(id, name, username, password);
+        UpdateAccount ua = new UpdateAccount(id, name, maskedPassword, password);
         ua.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosed(java.awt.event.WindowEvent e) {
