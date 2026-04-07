@@ -371,7 +371,9 @@ public class Cashier extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblDateTime, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblUser, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 387, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(lblUser, javax.swing.GroupLayout.PREFERRED_SIZE, 377, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(10, 10, 10)))))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -493,12 +495,38 @@ public class Cashier extends javax.swing.JFrame {
     }//GEN-LAST:event_btnPaymentActionPerformed
 
     private void addItemBarcodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addItemBarcodeActionPerformed
-       AddItemFromBarcode helper = new AddItemFromBarcode(cashierTable);
-       helper.addItem(barcodeField.getText(), Integer.parseInt(quantityField.getText()));
+        String qtyText = quantityField.getText().trim();
 
-       quantityField.setText("1");
-       barcodeField.setText("");
-       barcodeField.requestFocusInWindow();
+        if (qtyText.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                "Quantity cannot be empty!",
+                "Invalid Quantity", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int qty;
+        try {
+            qty = Integer.parseInt(qtyText);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this,
+                "Quantity must be a number!",
+                "Invalid Quantity", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (qty <= 0) {
+            JOptionPane.showMessageDialog(this,
+                "Quantity must be greater than 0!",
+                "Invalid Quantity", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        AddItemFromBarcode helper = new AddItemFromBarcode(cashierTable);
+        helper.addItem(barcodeField.getText(), qty);
+
+        quantityField.setText("1");
+        barcodeField.setText("");
+        barcodeField.requestFocusInWindow();
     }//GEN-LAST:event_addItemBarcodeActionPerformed
 
     private void generateReceipt(int transactionNo, double total, double cash, double balance) {
@@ -506,7 +534,7 @@ public class Cashier extends javax.swing.JFrame {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm a");
         jTextArea.setText(
-            "PENTAGRAM RECEIPT\n" +
+            "\n\n\nPENTAGRAM RECEIPT\n" +
             "---------------------------------------------\n" +
             "Date: " + dateFormat.format(new Date()) + "\n" +
             "Transaction # " + transactionNo + "\n" +
@@ -519,15 +547,15 @@ public class Cashier extends javax.swing.JFrame {
             String price = cashierTable.getValueAt(i, 3).toString();
             String subtotal = cashierTable.getValueAt(i, 4).toString();
             jTextArea.setText(jTextArea.getText() +
-                qty + "x " + itemName + " P" + price + " = " + subtotal + "\n");
+                itemName + " " + qty + "x "+ " P" + price + " = " + "P"+ subtotal + "\n");
         }
 
         jTextArea.setText(jTextArea.getText() +
             "---------------------------------------------\n" +
             "Total: P" + String.format("%.2f", total) + "\n" +
             "Cash: P" + String.format("%.2f", cash) + "\n" +
-            "Change: P" + String.format("%.2f", balance) + "\n\n" +
-            "THANK YOU FOR SHOPPING!\n"
+            "Balance: P" + String.format("%.2f", balance) + "\n\n" +
+            "THANK YOU FOR SHOPPING!\n\n\n"
         );
     }
 

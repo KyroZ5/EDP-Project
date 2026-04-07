@@ -20,9 +20,10 @@ public class AccountsRetrieve {
         String name = rs.getString("name");
         String username = rs.getString("username");
         String password = rs.getString("password");
+        String maskedPassword = "*".repeat(password.length());
         String role = rs.getString("role");
         
-        userModel.addRow(new Object[]{id, name, username, password, role});
+        userModel.addRow(new Object[]{id, name, username, maskedPassword, role});
         }
     }
         catch(Exception e){ 

@@ -23,7 +23,7 @@ public class Transactions extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Transactions.class.getName());
 
     String [][] row;
-    String [] col = {"Transaction No.", "Date and Time", "Amount", "Change (₱)", "Staff"};
+    String [] col = {"Transaction No.", "Date and Time", "Amount", "Balance (₱)", "Staff"};
     DefaultTableModel transactionModel = new DefaultTableModel(row, col){
         @Override
         public boolean isCellEditable(int row, int col){
@@ -56,7 +56,7 @@ public class Transactions extends javax.swing.JFrame {
         
         jDateChooser1.addPropertyChangeListener("date", evt -> {
             if (jDateChooser1.getDate() != null) {
-                filterByDate();   // ✅ refresh table with selected date
+                filterByDate(); 
             } else {
                 TransactionSQL.loadTransactions(transactionModel); // load all if cleared
             }

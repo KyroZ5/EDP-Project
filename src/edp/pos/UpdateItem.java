@@ -68,14 +68,21 @@ public class UpdateItem extends javax.swing.JFrame {
         btnCancel.setText("Cancel");
         btnCancel.addActionListener(this::btnCancelActionPerformed);
 
+        barcodeField.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         barcodeField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 barcodeFieldFocusGained(evt);
             }
         });
 
+        itemNameField.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel6.setText("Price (₱):");
+
+        stockField.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+
+        priceField.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
