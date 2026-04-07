@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package edp.pos;
 
 
@@ -9,15 +5,26 @@ import com.sun.jdi.connect.spi.Connection;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import java.text.SimpleDateFormat;
+import static java.time.Instant.now;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.Date;
+import javax.print.Doc;
+import javax.print.DocFlavor;
+import javax.print.DocPrintJob;
+import javax.print.PrintService;
+import javax.print.PrintServiceLookup;
+import javax.print.SimpleDoc;
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
+import javax.print.attribute.standard.Copies;
+import javax.print.attribute.standard.JobName;
 import javax.swing.Timer;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
 
 public class Cashier extends javax.swing.JFrame {
-    
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Cashier.class.getName());
 
     String [][] row;
     String [] col = {"Barcode", "Item Name", "Quantity", "Price (₱)", "Subtotal (₱)"};
@@ -35,10 +42,16 @@ public class Cashier extends javax.swing.JFrame {
         }
         return total;
     }
-    public Cashier() {
+    
+    private String currentRole;
+    
+    public Cashier(String role) {
         initComponents();
+        this.currentRole = role;
         setLocationRelativeTo(null);
-        
+        btnPrint.setEnabled(false);
+        btnVoid.setEnabled(false);
+
         transactionPanel.setBorder(BorderFactory.createTitledBorder("Transaction"));
         receiptPanel.setBorder(BorderFactory.createTitledBorder("Receipt"));
         paymentPanel.setBorder(BorderFactory.createTitledBorder("Payment"));
@@ -49,9 +62,27 @@ public class Cashier extends javax.swing.JFrame {
         setShape(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 25, 25));
         
         scaleImage();
-        
-        lblUser.setText("Logged in as: "+Users.getStaff());
-        
+        lblUser.setText("Logged in as: "+ Users.getCurrentName() + " (" + Users.getCurrentRole() + ")");
+
+            // Get the header of the actual table in your form
+          JTableHeader header = cashierJTable.getTableHeader();
+
+          // Change font (bold + bigger)
+          header.setFont(new Font("Segoe UI", Font.BOLD, 25));
+
+          // Optional: center header text
+          DefaultTableCellRenderer renderer = (DefaultTableCellRenderer) header.getDefaultRenderer();
+          renderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+          // Center all rows in the table
+          DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+          centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+          // Apply to each column
+          for (int i = 0; i < cashierJTable.getColumnCount(); i++) {
+              cashierJTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+            }
+      
         Timer timer = new Timer(1000, e -> {
              String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
              String time = new SimpleDateFormat("hh:mm a").format(new Date());
@@ -59,37 +90,41 @@ public class Cashier extends javax.swing.JFrame {
         });
         timer.start();    
         
-        // 👉 Setup numpad here
         numpadPanel.setLayout(new GridLayout(4, 3, 5, 5));
 
-        // Buttons 1–9
         for (int i = 1; i <= 9; i++) {
-            JButton btn = new JButton(String.valueOf(i));
-            btn.setFont(new Font("Segoe UI", Font.BOLD, 70));
-            btn.addActionListener(e -> {
-                String current = quantityField.getText();
-                quantityField.setText(current.equals("0") ? btn.getText() : current + btn.getText());
+        JButton btn = new JButton(String.valueOf(i));
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 70));
+        btn.addActionListener(e -> {
+            quantityField.setText(quantityField.getText() + btn.getText());
             });
             numpadPanel.add(btn);
         }
 
-        // Zero button
         JButton zero = new JButton("0");
         zero.setFont(new Font("Segoe UI", Font.BOLD, 70));
-        zero.addActionListener(e -> quantityField.setText(quantityField.getText() + "0"));
+        zero.addActionListener(e -> {
+            // Always append zero
+            quantityField.setText(quantityField.getText() + "0");
+        });
         numpadPanel.add(zero);
 
-        // Clear button
         JButton clear = new JButton("Clear");
         clear.setFont(new Font("Segoe UI", Font.BOLD, 30));
         clear.addActionListener(e -> quantityField.setText("")); // reset
         numpadPanel.add(clear);
 
-        // Enter button
         JButton enter = new JButton("Enter");
         enter.setFont(new Font("Segoe UI", Font.BOLD, 30));
         enter.addActionListener(e -> addItemBarcode.doClick()); // simulate pressing Add Item
         numpadPanel.add(enter);
+        
+        cashierJTable.getSelectionModel().addListSelectionListener(event -> {
+            if (!event.getValueIsAdjusting()) {
+                boolean rowSelected = cashierJTable.getSelectedRow() != -1;
+                btnVoid.setEnabled(rowSelected);
+            }
+        });
     }
     
     public void scaleImage(){
@@ -99,20 +134,18 @@ public class Cashier extends javax.swing.JFrame {
         ImageIcon scaledIcon = new ImageIcon(imgScale);
         logo.setIcon(scaledIcon);
     }
-    
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton7 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         receiptPanel = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        btnMenu = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        jTextArea = new javax.swing.JTextPane();
+        btnPrint = new javax.swing.JButton();
+        btnReset = new javax.swing.JButton();
         paymentPanel = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         barcodeField = new javax.swing.JTextField();
@@ -120,7 +153,7 @@ public class Cashier extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         quantityField = new javax.swing.JTextField();
         btnPayment = new javax.swing.JButton();
-        btnDelete = new javax.swing.JButton();
+        btnVoid = new javax.swing.JButton();
         numpadPanel = new javax.swing.JPanel();
         transactionPanel = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -128,8 +161,6 @@ public class Cashier extends javax.swing.JFrame {
         logo = new javax.swing.JLabel();
         lblDateTime = new javax.swing.JLabel();
         lblUser = new javax.swing.JLabel();
-
-        jButton7.setText("jButton7");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -144,17 +175,18 @@ public class Cashier extends javax.swing.JFrame {
         receiptPanel.setToolTipText("");
         receiptPanel.setName(""); // NOI18N
 
-        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jButton1.setText("Menu");
-        jButton1.addActionListener(this::jButton1ActionPerformed);
+        btnMenu.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnMenu.setText("Menu");
+        btnMenu.addActionListener(this::btnMenuActionPerformed);
 
-        jScrollPane1.setViewportView(jTextPane1);
+        jScrollPane1.setViewportView(jTextArea);
 
-        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jButton2.setText("Print Receipt");
+        btnPrint.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnPrint.setText("Print Receipt");
 
-        jButton3.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jButton3.setText("Reset All");
+        btnReset.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnReset.setText("Reset All");
+        btnReset.addActionListener(this::btnResetActionPerformed);
 
         javax.swing.GroupLayout receiptPanelLayout = new javax.swing.GroupLayout(receiptPanel);
         receiptPanel.setLayout(receiptPanelLayout);
@@ -165,20 +197,20 @@ public class Cashier extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(receiptPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(receiptPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jButton3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnPrint, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnMenu, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnReset, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
         receiptPanelLayout.setVerticalGroup(
             receiptPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(receiptPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnPrint, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(38, 38, 38)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(41, 41, 41)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(receiptPanelLayout.createSequentialGroup()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -203,14 +235,15 @@ public class Cashier extends javax.swing.JFrame {
         jLabel3.setText("QUANTITY:");
 
         quantityField.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        quantityField.addActionListener(this::quantityFieldActionPerformed);
 
         btnPayment.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         btnPayment.setText("Process Payment");
         btnPayment.addActionListener(this::btnPaymentActionPerformed);
 
-        btnDelete.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        btnDelete.setText("Void Item");
-        btnDelete.addActionListener(this::btnDeleteActionPerformed);
+        btnVoid.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnVoid.setText("Void Item");
+        btnVoid.addActionListener(this::btnVoidActionPerformed);
 
         numpadPanel.setBackground(new java.awt.Color(100, 150, 135));
         numpadPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -247,7 +280,7 @@ public class Cashier extends javax.swing.JFrame {
                     .addGroup(paymentPanelLayout.createSequentialGroup()
                         .addGroup(paymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(quantityField)
-                            .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE))
+                            .addComponent(btnVoid, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnPayment, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
@@ -267,7 +300,7 @@ public class Cashier extends javax.swing.JFrame {
                 .addComponent(quantityField, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(paymentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnVoid, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnPayment, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(numpadPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -279,7 +312,9 @@ public class Cashier extends javax.swing.JFrame {
         transactionPanel.setForeground(new java.awt.Color(100, 150, 135));
 
         cashierJTable.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        cashierJTable.setFont(new java.awt.Font("Segoe UI", 0, 30)); // NOI18N
         cashierJTable.setModel(cashierTable);
+        cashierJTable.setRowHeight(50);
         jScrollPane2.setViewportView(cashierJTable);
 
         javax.swing.GroupLayout transactionPanelLayout = new javax.swing.GroupLayout(transactionPanel);
@@ -311,6 +346,8 @@ public class Cashier extends javax.swing.JFrame {
 
         lblUser.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         lblUser.setForeground(new java.awt.Color(255, 255, 255));
+        lblUser.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblUser.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -330,14 +367,14 @@ public class Cashier extends javax.swing.JFrame {
                         .addComponent(logo, javax.swing.GroupLayout.PREFERRED_SIZE, 557, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblUser, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblDateTime, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(lblDateTime, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblUser, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 387, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(logo, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -345,7 +382,7 @@ public class Cashier extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(lblDateTime)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblUser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(lblUser, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -370,41 +407,78 @@ public class Cashier extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        SelectionAdmin sa = new SelectionAdmin();
-        sa.setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void btnMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMenuActionPerformed
+        if (cashierTable.getRowCount() > 0) {
+        int confirm = JOptionPane.showConfirmDialog(this,
+            "You have items in the transaction. Are you sure you want to go back to Menu?",
+            "Confirm Menu",
+            JOptionPane.YES_NO_OPTION);
+
+            if (confirm != JOptionPane.YES_OPTION) {
+                return; // cancel going back
+            }
+        }
+
+        if ("ADMIN".equalsIgnoreCase(currentRole)) {
+            SelectionAdmin sa = new SelectionAdmin();
+            sa.setVisible(true);
+            this.dispose();
+        } else {
+            int confirm = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to log out?",
+                "Logout",
+                JOptionPane.YES_NO_OPTION);
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                new Login().setVisible(true);
+                this.dispose();
+            }
+        }
+    }//GEN-LAST:event_btnMenuActionPerformed
 
     private void logoComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_logoComponentResized
 
     }//GEN-LAST:event_logoComponentResized
 
     private void btnPaymentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPaymentActionPerformed
-//      double totalAmount = calculateTotal();
-//
-//      Payment payment = new Payment(totalAmount);
-//      payment.setLocationRelativeTo(this);
-//      payment.setVisible(true);
+        if (cashierTable.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "No items in transaction!", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        this.setEnabled(false);
 
-// Disable Cashier while Payment is open
-    this.setEnabled(false);
+        double totalAmount = calculateTotal();
+        Payment p = new Payment(totalAmount);
 
-    double totalAmount = calculateTotal();
-    Payment p = new Payment(totalAmount);
-
-    // Add a listener so when Payment closes, Cashier re‑enables
-    p.addWindowListener(new java.awt.event.WindowAdapter() {
+        p.addWindowListener(new java.awt.event.WindowAdapter() {
         @Override
         public void windowClosed(java.awt.event.WindowEvent e) {
             Cashier.this.setEnabled(true);
-            Cashier.this.toFront(); // bring back focus
+            Cashier.this.toFront();
+
+            if (p.isConfirmed()) {  
+                double cash = p.getCashReceived();
+                double balance = cash - totalAmount;
+                if (cash >= totalAmount) {
+                    java.util.Date now = new java.util.Date();
+                    String staff = Users.getCurrentName();
+                    boolean success = TransactionSQL.addTransaction(now, totalAmount, balance, staff);
+
+                    if (success) {
+                        TransacData.transData.add(new TransacData(TransacData.transData.size() + 1, totalAmount, balance));
+
+                        generateReceipt(totalAmount, cash, balance);
+                        printReceiptDirect();
+                        btnPrint.setEnabled(true);
+                    }
+                }
+            }
         }
     });
 
-    p.setLocationRelativeTo(this);
-    p.setVisible(true);
-
+        p.setLocationRelativeTo(this);
+        p.setVisible(true);
     }//GEN-LAST:event_btnPaymentActionPerformed
 
     private void addItemBarcodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addItemBarcodeActionPerformed
@@ -416,16 +490,76 @@ public class Cashier extends javax.swing.JFrame {
        barcodeField.requestFocusInWindow();
     }//GEN-LAST:event_addItemBarcodeActionPerformed
 
-    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        int selectedRow = cashierJTable.getSelectedRow(); // get selected row index
+    private void generateReceipt(double total, double cash, double balance) {
+        jTextArea.setText(""); // clear
 
-        if (selectedRow != -1) { // -1 means no row selected
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm a");
+        jTextArea.setText(
+            "PENTAGRAM RECEIPT\n" +
+            "---------------------------------------------\n" +
+            "Date: " + dateFormat.format(new Date()) + "\n" +
+            "Transaction # " + TransacData.transData.size() + "\n" +
+            "Staff: " + Users.getCurrentName() + "\n\n"
+        );
+
+        for (int i = 0; i < cashierTable.getRowCount(); i++) {
+            String itemName = cashierTable.getValueAt(i, 1).toString();
+            String qty = cashierTable.getValueAt(i, 2).toString();
+            String price = cashierTable.getValueAt(i, 3).toString();
+            String subtotal = cashierTable.getValueAt(i, 4).toString();
+            jTextArea.setText(jTextArea.getText() +
+                qty + "x " + itemName + " ₱" + price + " = " + subtotal + "\n");
+        }
+
+        jTextArea.setText(jTextArea.getText() +
+            "---------------------------------------------\n" +
+            "Total: ₱" + String.format("%.2f", total) + "\n" +
+            "Cash: ₱" + String.format("%.2f", cash) + "\n" +
+            "Change: ₱" + String.format("%.2f", balance) + "\n\n" +
+            "THANK YOU FOR SHOPPING!\n"
+        );
+    }
+
+    private void printReceiptDirect() {
+        try {
+            String receiptText = jTextArea.getText();
+            byte[] receiptBytes = receiptText.getBytes("UTF-8");
+            DocFlavor flavor = DocFlavor.BYTE_ARRAY.AUTOSENSE;
+            PrintService[] printServices = PrintServiceLookup.lookupPrintServices(flavor, null);
+
+            if (printServices.length > 0) {
+                PrintService selectedService = printServices[0];
+                for (PrintService service : printServices) {
+                    if (service.getName().toLowerCase().contains("xprinter-58")) {
+                        selectedService = service;
+                        break;
+                    }
+                }
+                DocPrintJob printJob = selectedService.createPrintJob();
+                Doc doc = new SimpleDoc(receiptBytes, flavor, null);
+                PrintRequestAttributeSet attributes = new HashPrintRequestAttributeSet();
+                attributes.add(new Copies(1));
+                attributes.add(new JobName("Pentagram POS Receipt", null));
+                printJob.print(doc, attributes);
+            } else {
+                JOptionPane.showMessageDialog(this, "No printer found! Please check your USB printer connection.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Printing error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void btnVoidActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoidActionPerformed
+       int selectedRow = cashierJTable.getSelectedRow();
+        if (selectedRow != -1) {
             DefaultTableModel model = (DefaultTableModel) cashierJTable.getModel();
             model.removeRow(selectedRow);
-        } else {
-            JOptionPane.showMessageDialog(this, "Please select an item to void.", "No Selection", JOptionPane.WARNING_MESSAGE);
+
+            double newTotal = calculateTotal();
+            System.out.println("New total: " + newTotal);
         }
-    }//GEN-LAST:event_btnDeleteActionPerformed
+    }//GEN-LAST:event_btnVoidActionPerformed
 
     private void barcodeFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_barcodeFieldActionPerformed
        AddItemFromBarcode helper = new AddItemFromBarcode(cashierTable);
@@ -437,22 +571,39 @@ public class Cashier extends javax.swing.JFrame {
        barcodeField.requestFocusInWindow();
     }//GEN-LAST:event_barcodeFieldActionPerformed
 
+    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
+        cashierTable.setRowCount(0);
+
+        jTextArea.setText("");
+
+        barcodeField.setText("");
+        quantityField.setText("1");
+
+        btnPrint.setEnabled(false);   
+        btnMenu.setEnabled(true);  
+
+        JOptionPane.showMessageDialog(this, "Transaction has been reset.", "Reset Complete", JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_btnResetActionPerformed
+
+    private void quantityFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_quantityFieldActionPerformed
+      
+    }//GEN-LAST:event_quantityFieldActionPerformed
+   
     // Variables declaration - do not modify//GEN-BEGIN:variables
     javax.swing.JButton addItemBarcode;
     javax.swing.JTextField barcodeField;
-    javax.swing.JButton btnDelete;
+    javax.swing.JButton btnMenu;
     javax.swing.JButton btnPayment;
+    javax.swing.JButton btnPrint;
+    javax.swing.JButton btnReset;
+    javax.swing.JButton btnVoid;
     javax.swing.JTable cashierJTable;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton7;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextPane jTextPane1;
+    javax.swing.JTextPane jTextArea;
     javax.swing.JLabel lblDateTime;
     javax.swing.JLabel lblUser;
     javax.swing.JLabel logo;

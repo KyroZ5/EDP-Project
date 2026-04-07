@@ -16,18 +16,18 @@ public class AccountsRetrieve {
         userModel.setRowCount(0);
          
         while(rs.next()){
-        String Name = rs.getString("Name");
-        String Username = rs.getString("Username");
-        String Password = rs.getString("Password");
-         
-        userModel.addRow(new Object[]{Name,Username,Password});
+        int id = rs.getInt("id"); 
+        String name = rs.getString("name");
+        String username = rs.getString("username");
+        String password = rs.getString("password");
+        String role = rs.getString("role");
         
+        userModel.addRow(new Object[]{id, name, username, password, role});
         }
     }
         catch(Exception e){ 
             System.out.println(e.getMessage());
-            Accounts a = new Accounts();
-            JOptionPane.showMessageDialog(a, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

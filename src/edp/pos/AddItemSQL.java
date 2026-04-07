@@ -11,7 +11,7 @@ import javax.swing.JOptionPane;
 
 
 public class AddItemSQL {
-    static void addItem(int barcode, String itemName, int stock, double price){
+    static void addItem(String barcode, String itemName, int stock, double price){
     try
      {
         Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/pos", "root", "");
@@ -19,7 +19,7 @@ public class AddItemSQL {
         PreparedStatement pst= (PreparedStatement) conn.prepareStatement("insert into inventory (barcode,itemName,stock,price) values(?,?,?,?)");
          
         
-        pst.setInt(1, barcode);
+        pst.setString(1, barcode);
         pst.setString(2, itemName);
 	pst.setInt(3, stock);
         pst.setDouble(4, price);

@@ -10,6 +10,13 @@ public class Payment extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Payment.class.getName());
     private double totalAmount;
+    private double cashReceived;
+
+    private boolean confirmed = false;
+
+    public boolean isConfirmed() {
+        return confirmed;
+    }
 
     public Payment(double totalAmount) {
         initComponents();
@@ -175,15 +182,15 @@ public class Payment extends javax.swing.JFrame {
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         int x = JOptionPane.showConfirmDialog(this, "Are you sure you want to Cancel?", "Exit Payment", JOptionPane.YES_NO_OPTION);
         if (x == JOptionPane.YES_OPTION) {
-            //System.exit(0);
+            confirmed = false;
             this.dispose();
         }
     }//GEN-LAST:event_btnCancelActionPerformed
 
     private void btnConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmActionPerformed
         try {
-        double cash = Double.parseDouble(cashField.getText());
-        double change = cash - totalAmount;
+        cashReceived = Double.parseDouble(cashField.getText());
+        double change = cashReceived - totalAmount;
 
         if (change < 0) {
             JOptionPane.showMessageDialog(this, "Insufficient cash!", "Error", JOptionPane.ERROR_MESSAGE);
@@ -191,42 +198,19 @@ public class Payment extends javax.swing.JFrame {
         }
 
         lblChange.setText("Change: ₱" + change);
-
-        // Popup message for cashier
         JOptionPane.showMessageDialog(this, "Change to give: ₱" + change, "Payment Successful", JOptionPane.INFORMATION_MESSAGE);
 
-        // Close Payment and return to Cashier
+        confirmed = true;   // ✅ mark as confirmed
         this.dispose();
-
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Invalid cash input!", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Invalid cash input!", "Error", JOptionPane.ERROR_MESSAGE);
+    }                                         
     }//GEN-LAST:event_btnConfirmActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new Payment().setVisible(true));
+    
+    public double getCashReceived() {
+    return cashReceived;
     }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     javax.swing.JButton btnCancel;

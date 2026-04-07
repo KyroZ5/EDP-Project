@@ -200,6 +200,7 @@ public class InventoryAdmin extends javax.swing.JFrame {
 
         editBtn.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         editBtn.setText("Edit Item");
+        editBtn.addActionListener(this::editBtnActionPerformed);
 
         addBtn.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         addBtn.setText("Add Item");
@@ -317,7 +318,8 @@ public class InventoryAdmin extends javax.swing.JFrame {
             return;
         }
 
-        defaultAdminExists();
+        defaultAdmin();
+
         Users matchedUser = null;
         for (Users acc : Users.accts) {
             if (userL.equals(acc.getUsername()) && passL.equals(acc.getPassword())) {
@@ -327,21 +329,61 @@ public class InventoryAdmin extends javax.swing.JFrame {
         }
 
         if (matchedUser != null) {
-            JOptionPane.showMessageDialog(this, "Welcome, " + matchedUser.getEmployeeName(), "Login Successful", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Welcome, " + matchedUser.getCurrentName(), "Login Successful", JOptionPane.INFORMATION_MESSAGE);
 
-            if (matchedUser.getUsername().equalsIgnoreCase("admin")) {
-                Users.setAdmin(true);
-                Users.setStaff("Administrator");
+            Users.setCurrentUser(matchedUser.getUsername(), matchedUser.getCurrentName(), matchedUser.getRole());
+
+            if (matchedUser.getRole().equalsIgnoreCase("ADMIN")) {
                 new SelectionAdmin().setVisible(true);
+            } else if (matchedUser.getRole().equalsIgnoreCase("CASHIER")) {
+                new Cashier(matchedUser.getRole()).setVisible(true);
             }
+
             this.dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Invalid username or password!", "Invalid Login", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnLoginActionPerformed
+    private void defaultAdmin() {
+        boolean adminFound = false;
+
+        for (Users acc : Users.accts) {
+            if (acc.getRole().equalsIgnoreCase("ADMIN")) {
+                adminFound = true;
+                break;
+            }
+        }
+
+        if (!adminFound) {
+            Users admin = new Users("admin", "admin", "System Administrator", "ADMIN");
+            Users.accts.add(admin);
+        }
+    }
 
     private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
-        // TODO add your handling code here:
+        int row = inventoryJModel.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Select an item to delete", "Warning", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int barcode = Integer.parseInt(inventoryJModel.getValueAt(row, 0).toString());
+        String itemName = inventoryJModel.getValueAt(row, 1).toString();
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+            "Are you sure you want to delete item: " + itemName + "?",
+            "Confirm Delete",
+            JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            boolean success = DeleteItemSQL.deleteItem(barcode);
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Item deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                refreshBtnActionPerformed(null); // refresh after delete
+            } else {
+                JOptionPane.showMessageDialog(this, "Delete failed!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }//GEN-LAST:event_deleteBtnActionPerformed
 
     private void refreshBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshBtnActionPerformed
@@ -354,18 +396,40 @@ public class InventoryAdmin extends javax.swing.JFrame {
         
         AddItem a = new AddItem();
         
-        // Add a listener so when Payment closes, Cashier re‑enables
         a.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosed(java.awt.event.WindowEvent e) {
                 InventoryAdmin.this.setEnabled(true);
-                InventoryAdmin.this.toFront(); // bring back focus
+                InventoryAdmin.this.toFront();
             }
         });
 
         a.setLocationRelativeTo(this);
         a.setVisible(true);
     }//GEN-LAST:event_addBtnActionPerformed
+
+    private void editBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editBtnActionPerformed
+        int row = inventoryJModel.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Select an item to edit", "Warning", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String barcode = inventoryJModel.getValueAt(row, 0).toString();
+        String itemName = inventoryJModel.getValueAt(row, 1).toString();
+        int stock = Integer.parseInt(inventoryJModel.getValueAt(row, 2).toString());
+        double price = Double.parseDouble(inventoryJModel.getValueAt(row, 3).toString());
+
+        UpdateItem ui = new UpdateItem(barcode, itemName, stock, price);
+        ui.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                refreshBtnActionPerformed(null);
+            }
+        });
+        ui.setLocationRelativeTo(this);
+        ui.setVisible(true);
+    }//GEN-LAST:event_editBtnActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -391,7 +455,6 @@ public class InventoryAdmin extends javax.swing.JFrame {
     private javax.swing.JTextField txtUsername;
     // End of variables declaration//GEN-END:variables
 
-    private void defaultAdminExists() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+    
+
 }

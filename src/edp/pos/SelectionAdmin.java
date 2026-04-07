@@ -167,7 +167,7 @@ public class SelectionAdmin extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAccountsActionPerformed
 
     private void btnCashierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCashierActionPerformed
-        Cashier ca = new Cashier();
+        Cashier ca = new Cashier("ADMIN");
         ca.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnCashierActionPerformed

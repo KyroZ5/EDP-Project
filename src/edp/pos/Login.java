@@ -1,5 +1,6 @@
 package edp.pos;
 
+import com.sun.jdi.connect.spi.Connection;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.geom.RoundRectangle2D;
@@ -12,7 +13,7 @@ public class Login extends javax.swing.JFrame {
         initComponents();   
         setLocationRelativeTo(null);
         setShape(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 25, 25));
-        
+
         logo();
         ImageBack();
         userLogo();
@@ -89,6 +90,7 @@ public class Login extends javax.swing.JFrame {
         jPanel1.setDoubleBuffered(false);
         jPanel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
 
+        txtPassword.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         txtPassword.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 txtPasswordFocusGained(evt);
@@ -104,6 +106,7 @@ public class Login extends javax.swing.JFrame {
         btnExit.setMargin(new java.awt.Insets(10, 35, 10, 35));
         btnExit.addActionListener(this::btnExitActionPerformed);
 
+        txtUsername.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         txtUsername.setToolTipText("Username");
         txtUsername.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
@@ -240,36 +243,30 @@ public class Login extends javax.swing.JFrame {
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         String userL = txtUsername.getText().trim();
         String passL = new String(txtPassword.getPassword()).trim();
-        
+
         if (userL.isEmpty() || passL.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Fields cannot be empty", "Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        Admin();
-        Users matchedUser = null;
-        for (Users acc : Users.accts) {
-            if (userL.equals(acc.getUsername()) && passL.equals(acc.getPassword())) {
-                matchedUser = acc;
-                break;
-            }
-        }
-        if (matchedUser != null) {
-            JOptionPane.showMessageDialog(this, "Welcome, " + matchedUser.getEmployeeName(), "Login Successful", JOptionPane.INFORMATION_MESSAGE);
+        Users matchedUser = LoginSQL.authenticate(userL, passL); 
 
-            if (matchedUser.getUsername().equalsIgnoreCase("admin")) {
-                Users.setAdmin(true);
-                Users.setStaff("Administrator");
-                new SelectionAdmin().setVisible(true);
-            } else {
-                Users.setAdmin(false);
-                Users.setStaff(matchedUser.getEmployeeName());
-                new Cashier().setVisible(true);
-            }
-            this.dispose();
-        } else {
-            JOptionPane.showMessageDialog(this, "Invalid username or password!", "Invalid Login", JOptionPane.ERROR_MESSAGE);
+        if (matchedUser == null) {
+            JOptionPane.showMessageDialog(this, "Invalid username or password!", "Login Failed", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+        Users.setCurrentUser(matchedUser.getUsername(), matchedUser.getName(), matchedUser.getRole());
+
+        JOptionPane.showMessageDialog(this, "Welcome, " + matchedUser.getName());
+
+        String role = matchedUser.getRole().trim().toUpperCase();
+
+        if (role.equals("ADMIN")) {
+            new SelectionAdmin().setVisible(true);
+        } else {
+            new Cashier(role).setVisible(true);
+        }
+        this.dispose();
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
@@ -317,14 +314,6 @@ public class Login extends javax.swing.JFrame {
                      txtPassword.setEchoChar((char) 0); // Show placeholder
                  }
     }//GEN-LAST:event_txtPasswordFocusLost
-    private void Admin() {
-        for (Users acc : Users.accts) {
-            if (acc.getUsername().equals("admin")) {
-                return;
-            }
-        }
-        Users.accts.add(new Users("admin", "admin", "Administrator"));
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     javax.swing.JLabel backImg;
